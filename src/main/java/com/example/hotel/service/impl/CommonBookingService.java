@@ -5,7 +5,9 @@ import com.example.hotel.model.Order;
 import com.example.hotel.model.request.OrderRequest;
 import com.example.hotel.repository.OrderRepository;
 import com.example.hotel.repository.RoomAvailabilityRepository;
+import com.example.hotel.service.EmailSender;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -14,28 +16,33 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class CommonBookingServiceImpl {
+public class CommonBookingService {
 
     private final RoomAvailabilityRepository roomAvailabilityRepository;
     private final OrderRepository orderRepository;
+    private final EmailSender emailSender;
     private final ModelMapper mapper;
 
-    public boolean createOrder(OrderRequest order) {
-        validateOrder(order);
-        List<LocalDate> daysToBook = daysBetween(order.getFrom(), order.getTo());
-        val isAvailable = roomAvailabilityRepository.findByRoomAndDates(order.getRoomId(), daysToBook);
+    public boolean createOrder(OrderRequest orderRequest) {
+        validateOrder(orderRequest);
+        List<LocalDate> daysToBook = daysBetween(orderRequest.getFrom(), orderRequest.getTo());
+        val isAvailable = roomAvailabilityRepository.findByRoomAndDates(orderRequest.getRoomId(), daysToBook);
         if (isAvailable) {
-            orderRepository.save(mapper.map(order, Order.class));
+            val order = mapper.map(orderRequest, Order.class);
+            orderRepository.save(order);
+            emailSender.sendEmail(order);
             return true;
         }
+        log.info("no room for specific data for order: {}", orderRequest);
         return false;
     }
 
     private void validateOrder(OrderRequest newOrder) {
         if (newOrder.getUserId() == null
-                || newOrder.getUserId() == null
+                || newOrder.getRoomId() == null
                 || newOrder.getFrom() == null
                 || newOrder.getTo() == null) {
             throw new OrderNotValidException("incorrect order request");

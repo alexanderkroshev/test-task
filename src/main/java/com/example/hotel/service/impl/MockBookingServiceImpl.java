@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @ConditionalOnProperty(name = "database", havingValue = "mock")
 public class MockBookingServiceImpl implements BookingService {
 
-    private final CommonBookingServiceImpl commonBookingService;
+    private final CommonBookingService commonBookingService;
 
         @Override
         public boolean createOrder(OrderRequest newOrder) {

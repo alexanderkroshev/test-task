@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ConditionalOnProperty(name = "database", havingValue = "real")
 public class BookingServiceImpl implements BookingService {
 
-    private final CommonBookingServiceImpl commonBookingService;
+    private final CommonBookingService commonBookingService;
 
     @Override
     @Transactional
