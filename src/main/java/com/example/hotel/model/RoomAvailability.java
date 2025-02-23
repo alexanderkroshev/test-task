@@ -10,8 +10,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomAvailability {
-    private String hotelId;
-    private String roomId;
+    private Long id;
+    private Long roomId;
     private LocalDate date;
     private int quota;
 }

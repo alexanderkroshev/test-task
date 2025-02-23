@@ -9,10 +9,9 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class Order {
-    private String hotelId;
-    private String roomId;
-    private String userEmail;
+public class Order {
+    private Long roomId;
+    private Long userId;
     private LocalDate from;
     private LocalDate to;
 }

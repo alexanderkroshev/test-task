@@ -1,11 +1,11 @@
 package com.example.hotel.repository;
 
+import com.example.hotel.model.Order;
 
-import com.example.hotel.model.RoomAvailability;
-
-import java.util.List;
 
 public interface OrderRepository {
 
-    List<RoomAvailability> findAll();
+    void save(Order order);
+
+
 }

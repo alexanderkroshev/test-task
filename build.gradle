@@ -19,6 +19,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
@@ -27,6 +28,8 @@ dependencies {
 
     testCompileOnly 'org.projectlombok:lombok:1.18.36'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.2'
+    implementation 'org.postgresql:postgresql:42.7.5'
 }
 
 tasks.named('test') {

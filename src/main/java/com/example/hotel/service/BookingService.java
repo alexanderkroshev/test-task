@@ -2,9 +2,9 @@ package com.example.hotel.service;
 
 import com.example.hotel.model.request.OrderRequest;
 
-public interface OrderService {
+public interface BookingService {
 
-    void createOrder(OrderRequest request);
+    boolean createOrder(OrderRequest request);
 
 
 }
