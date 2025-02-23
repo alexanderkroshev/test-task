@@ -14,4 +14,10 @@ public class RoomAvailability {
     private Long roomId;
     private LocalDate date;
     private int quota;
+
+    public synchronized void decrementQuota() {
+        if (quota > 0) {
+            quota--;
+        }
+    }
 }
