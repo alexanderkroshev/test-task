@@ -14,8 +14,8 @@ public class MockBookingServiceImpl implements BookingService {
 
     private final CommonBookingService commonBookingService;
 
-        @Override
-        public boolean createOrder(OrderRequest newOrder) {
-            return commonBookingService.createOrder(newOrder);
-        }
+    @Override
+    public boolean createOrder(OrderRequest newOrder) {
+        return commonBookingService.createOrder(newOrder);
+    }
 }
