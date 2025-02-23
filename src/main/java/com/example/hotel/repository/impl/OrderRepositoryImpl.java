@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-@ConditionalOnProperty(name = "mock-db", havingValue = "true")
+@ConditionalOnProperty(name = "database", havingValue = "mock")
 public class OrderRepositoryImpl implements OrderRepository {
     private final List<Order> orders = new ArrayList<>();
 

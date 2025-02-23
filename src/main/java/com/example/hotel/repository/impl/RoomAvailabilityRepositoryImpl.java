@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository
-@ConditionalOnProperty(name = "mock-db", havingValue = "true")
+@ConditionalOnProperty(name = "database", havingValue = "mock")
 public class RoomAvailabilityRepositoryImpl implements RoomAvailabilityRepository {
 
     private final List<RoomAvailability> availability = new ArrayList<>(Arrays.asList(
@@ -42,8 +42,7 @@ public class RoomAvailabilityRepositoryImpl implements RoomAvailabilityRepositor
                 }
             }
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }

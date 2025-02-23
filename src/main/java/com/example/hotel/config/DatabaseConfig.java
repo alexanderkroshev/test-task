@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @ConfigurationProperties(prefix = "spring.datasource")
-@ConditionalOnProperty(name = "mock-db", havingValue = "false")
+@ConditionalOnProperty(name = "database", havingValue = "real")
 public class DatabaseConfig {
 
     @Bean
