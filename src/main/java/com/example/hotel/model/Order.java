@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
+    private Long id;
     private Long roomId;
     private Long userId;
     private LocalDate from;

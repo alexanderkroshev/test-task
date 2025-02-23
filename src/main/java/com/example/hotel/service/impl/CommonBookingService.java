@@ -9,12 +9,11 @@ import com.example.hotel.service.EmailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -24,20 +23,27 @@ public class CommonBookingService {
     private final RoomAvailabilityRepository roomAvailabilityRepository;
     private final OrderRepository orderRepository;
     private final EmailSender emailSender;
-    private final ModelMapper mapper;
 
-    public boolean createOrder(OrderRequest orderRequest) {
+    public Optional<Order> createOrder(OrderRequest orderRequest) {
         validateOrder(orderRequest);
-        List<LocalDate> daysToBook = daysBetween(orderRequest.getFrom(), orderRequest.getTo());
-        val isAvailable = roomAvailabilityRepository.findByRoomAndDates(orderRequest.getRoomId(), daysToBook);
-        if (isAvailable) {
-            val order = mapper.map(orderRequest, Order.class);
-            orderRepository.save(order);
-            emailSender.sendEmail(order);
-            return true;
+        List<LocalDate> daysToBook = getDaysBetween(orderRequest.getFrom(), orderRequest.getTo());
+        if (!roomAvailabilityRepository.findByRoomAndDates(orderRequest.getRoomId(), daysToBook)) {
+            log.info("no room for specific data for order: {}", orderRequest);
+            return Optional.empty();
         }
-        log.info("no room for specific data for order: {}", orderRequest);
-        return false;
+        val order = toOrder(orderRequest);
+        orderRepository.save(order);
+        emailSender.sendEmail(order);
+        return Optional.of(order);
+    }
+
+    private Order toOrder(OrderRequest orderRequest) {
+        return new Order(null,
+                orderRequest.getRoomId(),
+                orderRequest.getUserId(),
+                orderRequest.getFrom(),
+                orderRequest.getTo()
+        );
     }
 
     private void validateOrder(OrderRequest newOrder) {
@@ -45,12 +51,14 @@ public class CommonBookingService {
                 || newOrder.getRoomId() == null
                 || newOrder.getFrom() == null
                 || newOrder.getTo() == null) {
-            throw new OrderNotValidException("incorrect order request");
+            throw new OrderNotValidException("incorrect order request: Missing required fields");
         }
     }
 
-    private List<LocalDate> daysBetween(LocalDate from, LocalDate to) {
-        if (from.isAfter(to)) return Collections.emptyList();
+    private List<LocalDate> getDaysBetween(LocalDate from, LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new OrderNotValidException("incorrect order request: \"from\" is after \"to\"");
+        }
         return from.datesUntil(to.plusDays(1)).toList();
     }
 }

@@ -1,11 +1,14 @@
 package com.example.hotel.service.impl;
 
+import com.example.hotel.model.Order;
 import com.example.hotel.model.request.OrderRequest;
 import com.example.hotel.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +19,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public boolean createOrder(OrderRequest newOrder) {
+    public Optional<Order> createOrder(OrderRequest newOrder) {
         return commonBookingService.createOrder(newOrder);
     }
 }

@@ -15,6 +15,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public void save(Order order) {
+        order.setId((long) orders.size() + 1);
         orders.add(order);
     }
 }
