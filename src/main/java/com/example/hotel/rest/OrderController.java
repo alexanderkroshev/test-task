@@ -1,6 +1,5 @@
 package com.example.hotel.rest;
 
-import com.example.hotel.model.Order;
 import com.example.hotel.model.request.OrderRequest;
 import com.example.hotel.model.response.OrderResponse;
 import com.example.hotel.service.BookingService;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -24,9 +21,8 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderRequest newOrder) {
-        Optional<Order> createdOrder = bookingService.createOrder(newOrder);
-
-        return createdOrder.map(order -> ResponseEntity.status(HttpStatus.CREATED)
+        return bookingService.createOrder(newOrder)
+                .map(order -> ResponseEntity.status(HttpStatus.CREATED)
                         .body(new OrderResponse("Order created successfully", order)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new OrderResponse("Room is not available for the selected date", null)));

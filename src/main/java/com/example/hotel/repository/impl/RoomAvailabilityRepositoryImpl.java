@@ -2,21 +2,20 @@ package com.example.hotel.repository.impl;
 
 import com.example.hotel.model.RoomAvailability;
 import com.example.hotel.repository.RoomAvailabilityRepository;
-import lombok.val;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+
 @Repository
 @ConditionalOnProperty(name = "database", havingValue = "mock")
 public class RoomAvailabilityRepositoryImpl implements RoomAvailabilityRepository {
-
-    private final ConcurrentMap<Long, RoomAvailability> availability = new ConcurrentHashMap<>();
+    private final Map<Long, RoomAvailability> availability = new ConcurrentHashMap<>();
 
     public RoomAvailabilityRepositoryImpl() {
         List<RoomAvailability> initialData = Arrays.asList(
@@ -33,7 +32,7 @@ public class RoomAvailabilityRepositoryImpl implements RoomAvailabilityRepositor
     }
 
     @Override
-    public boolean findByRoomAndDates(Long roomId, List<LocalDate> dates) {
+    public synchronized boolean findByRoomAndDates(Long roomId, List<LocalDate> dates) {
         List<RoomAvailability> rooms = availability.values().stream()
                 .filter(room -> Objects.equals(room.getRoomId(), roomId) &&
                         dates.contains(room.getDate()))
@@ -42,7 +41,7 @@ public class RoomAvailabilityRepositoryImpl implements RoomAvailabilityRepositor
         boolean isAvailable = rooms.stream().allMatch(room -> room.getQuota() > 0);
 
         if (isAvailable) {
-            rooms.forEach(RoomAvailability::decrementQuota);
+            rooms.forEach(room -> room.setQuota(room.getQuota()-1));
             return true;
         }
         return false;
