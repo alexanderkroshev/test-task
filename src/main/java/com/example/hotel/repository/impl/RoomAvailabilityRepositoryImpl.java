@@ -1,5 +1,6 @@
 package com.example.hotel.repository.impl;
 
+import com.example.hotel.exception.MissingRoomDatesException;
 import com.example.hotel.model.RoomAvailability;
 import com.example.hotel.repository.RoomAvailabilityRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -38,12 +39,21 @@ public class RoomAvailabilityRepositoryImpl implements RoomAvailabilityRepositor
                         dates.contains(room.getDate()))
                 .toList();
 
-        boolean isAvailable = rooms.stream().allMatch(room -> room.getQuota() > 0);
-
-        if (isAvailable) {
-            rooms.forEach(room -> room.setQuota(room.getQuota()-1));
-            return true;
+        if(rooms.size()!= dates.size()) {
+            throw new MissingRoomDatesException("Not all required dates are available for room:"  + roomId);
         }
-        return false;
+
+        rooms.forEach(room -> room.getLock().lock());
+        try {
+            boolean isAvailable = rooms.stream().allMatch(room -> room.getQuota() > 0);
+
+            if (isAvailable) {
+                rooms.forEach(RoomAvailability::decrementQuota);
+                return true;
+            }
+            return false;
+        } finally {
+            rooms.forEach(room -> room.getLock().unlock());
+        }
     }
 }
