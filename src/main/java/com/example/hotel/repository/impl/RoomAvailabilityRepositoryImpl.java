@@ -33,7 +33,7 @@ public class RoomAvailabilityRepositoryImpl implements RoomAvailabilityRepositor
     }
 
     @Override
-    public synchronized boolean findByRoomAndDates(Long roomId, List<LocalDate> dates) {
+    public boolean findByRoomAndDates(Long roomId, List<LocalDate> dates) {
         List<RoomAvailability> rooms = availability.values().stream()
                 .filter(room -> Objects.equals(room.getRoomId(), roomId) &&
                         dates.contains(room.getDate()))
