@@ -7,7 +7,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,10 +33,11 @@ public class RoomAvailabilityRepositoryImpl implements RoomAvailabilityRepositor
 
     @Override
     public boolean findByRoomAndDates(Long roomId, List<LocalDate> dates) {
-        List<RoomAvailability> rooms = availability.stream()
+        List<RoomAvailability> rooms = new ArrayList<>(availability.stream()
                 .filter(room -> Objects.equals(room.getRoomId(), roomId) &&
                         dates.contains(room.getDate()))
-                .toList();
+                .sorted(Comparator.comparing(RoomAvailability::getId))
+                .toList());
 
         if (rooms.size() != dates.size()) {
             throw new MissingRoomDatesException("Not all required dates are available for room:" + roomId);
@@ -49,6 +53,7 @@ public class RoomAvailabilityRepositoryImpl implements RoomAvailabilityRepositor
             }
             return false;
         } finally {
+            Collections.reverse(rooms);
             rooms.forEach(room -> room.getLock().unlock());
         }
     }
